@@ -16,8 +16,10 @@ class User(UserMixin, db.Model):
     phone = db.Column(db.String(50),nullable=False)
     role = db.Column(db.String(50), nullable=False)
 
-    def __init__(self, name, password, role=["customer"]):
+    def __init__(self, name,email, password,phone, role=["customer"]):
         self.name = name
+        self.email=email
+        self.phone=phone
         self.role = json.dumps(role)
         self.password_hash = generate_password_hash(password)
 
@@ -26,5 +28,5 @@ class User(UserMixin, db.Model):
         db.session.commit()
 
     @staticmethod
-    def find_by_name(name):
+    def find_by_email(name):
         return User.query.filter_by(name=name).first()

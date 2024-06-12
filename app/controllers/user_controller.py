@@ -10,7 +10,7 @@ user_bp = Blueprint("user", __name__)
 @user_bp.route("/register", methods=["POST"])
 def register():
     data = request.json
-    name = data.get("user")
+    name = data.get("name")
     email=data.get("email")
     password = data.get("password")
     phone=data.get("phone")
@@ -19,7 +19,7 @@ def register():
     if not name or not password:
         return jsonify({"error": "Se requieren nombre de usuario y contraseña"}), 400
 
-    existing_user = User.find_by_name(name)
+    existing_user = User.find_by_email(email)
     if existing_user:
         return jsonify({"error": "El nombre de usuario ya está en uso"}), 400
 
@@ -32,13 +32,13 @@ def register():
 @user_bp.route("/login", methods=["POST"])
 def login():
     data = request.json
-    name = data.get("name")
+    email = data.get("email")
     password = data.get("password")
 
-    user = User.find_by_name(name)
+    user = User.find_by_email(email)
     if user and check_password_hash(user.password_hash, password):
         access_token = create_access_token(
-            identity={"name": name, "role": user.role}
+            identity={"email": user.email, "role": user.role}
         )
         return jsonify(access_token=access_token), 200
     else:
